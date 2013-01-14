@@ -1,0 +1,24 @@
+{
+    "name": "pincombe/msg-queue",
+    "description": "A Wrapper Library for Pheanstalkd",
+    "homepage": "http://bridgecombemedia.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Keith Pincombe",
+            "email": "keith@bridgecombemedia.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "pda/pheanstalk": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "MsgQueue": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
