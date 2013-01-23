@@ -32,6 +32,11 @@ class Connection
 		self::$connection->bury($job);
 	}
 
+	public function kick($tube, $job_count = 1)
+	{
+		return self::$connection->useTube($tube)->kick($job_count);
+	}
+
 	public function reserve($tube)
 	{
 		return self::$connection->watch($tube)->ignore('default')->reserve();
