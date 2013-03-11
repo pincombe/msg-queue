@@ -10,7 +10,7 @@ class Connection
 	{
         if (empty(self::$connection)) {
 
-            self::$connection = new \Pheanstalk($hostname);
+            self::$connection = new \Pheanstalk\Pheanstalk($hostname);
 
 			$listening = self::$connection->getConnection()->isServiceListening();
 			if (!$listening) {
