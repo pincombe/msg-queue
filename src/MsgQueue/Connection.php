@@ -9,7 +9,7 @@ class Connection
     public function __construct($hostname = '127.0.0.1')
     {
         if (empty(self::$connection)) {
-            self::$connection = new \Pheanstalk\Pheanstalk($hostname);
+            self::$connection = new \Pheanstalk_Pheanstalk($hostname);
             $listening = self::$connection->getConnection()->isServiceListening();
             if (!$listening) {
                 throw new \Exception('Message queue server is not available');
@@ -21,7 +21,7 @@ class Connection
 
     public function put($tube, $data)
     {
-        self::$connection->useTube($tube)->put($data);
+        self::$connection->useTube($tube)->put($data, 0);
     }
 
     public function bury($job)
@@ -38,22 +38,45 @@ class Connection
     {
         return self::$connection->watch($tube)->ignore('default')->reserve();
     }
-    
-    public function peek($tube)
+
+    public function release($job, $delay = 0)
     {
-        return self::$connection->watch($tube)->ignore('default')->peek();
+        self::$connection->release($job, 0, $delay);
     }
 
     public function delete($job)
     {
         self::$connection->delete($job);
     }
-    
+
     public function deleteAll($tube)
     {
-        while ($job = $this->peek($tube)) {
-            $this->delete($job);
-        }
+	    // TODO Complain to the makers of Pheanstalk to see if they can replace the notice for an exception
+
+		try {
+
+		    while ($job = self::$connection->useTube($tube)->peekDelayed()) {
+		        self::$connection->delete($job);
+		    }
+
+		} catch (Pheanstalk_Exception_ConnectionException $e) {}
+
+		try {
+
+		    while ($job = self::$connection->useTube($tube)->peekBuried()) {
+		        self::$connection->delete($job);
+		    }
+
+		} catch (Pheanstalk_Exception_ConnectionException $e) {}
+
+		try {
+
+		    while ($job = self::$connection->useTube($tube)->peekReady()) {
+		        self::$connection->delete($job);
+		    }
+
+		} catch (Pheanstalk_Exception_ConnectionException $e) {}
+
     }
 
     public function statsTube($name)
