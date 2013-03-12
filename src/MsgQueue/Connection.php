@@ -38,10 +38,22 @@ class Connection
     {
         return self::$connection->watch($tube)->ignore('default')->reserve();
     }
+    
+    public function peek($tube)
+    {
+        return self::$connection->watch($tube)->ignore('default')->peek();
+    }
 
     public function delete($job)
     {
         self::$connection->delete($job);
+    }
+    
+    public function deleteAll($tube)
+    {
+        while ($job = $this->peek($tube)) {
+            $this->delete($job);
+        }
     }
 
     public function statsTube($name)
