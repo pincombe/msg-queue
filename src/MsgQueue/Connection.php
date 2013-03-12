@@ -9,7 +9,7 @@ class Connection
     public function __construct($hostname = '127.0.0.1')
     {
         if (empty(self::$connection)) {
-            self::$connection = new \Pheanstalk_Pheanstalk($hostname);
+            self::$connection = new \Pheanstalk($hostname);
             $listening = self::$connection->getConnection()->isServiceListening();
             if (!$listening) {
                 throw new \Exception('Message queue server is not available');
