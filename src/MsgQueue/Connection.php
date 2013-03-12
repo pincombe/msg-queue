@@ -4,12 +4,15 @@ namespace MsgQueue;
 
 class Connection
 {
+	const DEFAULT_TIMEOUT = 7200;
+	const DEFAULT_PRIORITY = 1024; // most urgent: 0, least urgent: 4294967295
+
     public static $connection;
 
     public function __construct($hostname = '127.0.0.1')
     {
         if (empty(self::$connection)) {
-            self::$connection = new \Pheanstalk($hostname);
+            self::$connection = new \Pheanstalk_Pheanstalk($hostname);
             $listening = self::$connection->getConnection()->isServiceListening();
             if (!$listening) {
                 throw new \Exception('Message queue server is not available');
@@ -21,7 +24,7 @@ class Connection
 
     public function put($tube, $data)
     {
-        self::$connection->useTube($tube)->put($data, 0);
+        self::$connection->useTube($tube)->put($data);
     }
 
     public function bury($job)
@@ -34,14 +37,16 @@ class Connection
     	return self::$connection->useTube($tube)->kick($job_count);
     }
 
-    public function reserve($tube)
+    public function reserve($tube, $timeout = self::DEFAULT_TIMEOUT)
     {
+    	print $timeout; exit;
+
         return self::$connection->watch($tube)->ignore('default')->reserve();
     }
 
     public function release($job, $delay = 0)
     {
-        self::$connection->release($job, 0, $delay);
+        self::$connection->release($job, self::DEFAULT_PRIORITY, $delay);
     }
 
     public function delete($job)

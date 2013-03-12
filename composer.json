@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "mrpoundsign/pheanstalk-5.3": "dev-master"
+        "pda/pheanstalk": "dev-master"
     },
     "autoload": {
         "psr-0": { "MsgQueue": "src/" }
