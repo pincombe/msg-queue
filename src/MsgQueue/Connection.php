@@ -39,8 +39,6 @@ class Connection
 
     public function reserve($tube, $timeout = self::DEFAULT_TIMEOUT)
     {
-    	print $timeout; exit;
-
         return self::$connection->watch($tube)->ignore('default')->reserve();
     }
 
